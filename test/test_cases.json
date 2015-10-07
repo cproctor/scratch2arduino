@@ -1,0 +1,39 @@
+{
+    "scripts": [
+
+[2322, 190, [["procDef", "Find color offset", [], [], false], ["doIf", ["=", ["readVariable", "main color"], "RED"], [["doIfElse", ["=", ["readVariable", "second color"], "GREEN"], [["setVar:to:", "color offset", ["+", 0, ["/", ["readVariable", "second color value"], 3]]]], [["setVar:to:", "color offset", ["-", 200, ["/", ["readVariable", "second color value"], 3]]]]]]], ["doIf", ["=", ["readVariable", "main color"], "GREEN"], [["doIfElse", ["=", ["readVariable", "second color"], "RED"], [["setVar:to:", "color offset", ["-", 66, ["/", ["readVariable", "second color value"], 3]]]], [["setVar:to:", "color offset", ["+", 66, ["/", ["readVariable", "second color value"], 3]]]]]]], ["doIf", ["=", ["readVariable", "main color"], "BLUE"], [["doIfElse", ["=", ["readVariable", "second color"], "RED"], [["setVar:to:", "color offset", ["+", 133, ["/", ["readVariable", "second color value"], 3]]]], [["setVar:to:", "color offset", ["-", 133, ["/", ["readVariable", "second color value"], 3]]]]]]]]],
+
+[1526, 775.4,
+                    [["procDef", "Set light %n to RGB %n %n %n", ["light number", "red", "green", "blue"], [1, 1, 1, 1], false],
+                        ["call",
+                            "Find main and second colors %n %n %n",
+                            ["getParam", "red", "r"],
+                            ["getParam", "green", "r"],
+                            ["getParam", "blue", "r"]],
+                        ["call", "Scale color values"],
+                        ["call", "Find color offset"],
+                        ["setLine:ofList:to:", ["getParam", "light number", "r"], "light color", ["readVariable", "color offset"]],
+                        ["broadcast:", "update lights"]]]
+    ],
+
+    "statements": [
+        ["setVar:to:", "color offset", ["+", 0, ["/", ["readVariable", "second color value"], 3]]],
+        ["doIf", ["=", ["readVariable", "main color"], "RED"], [["setVar:to:", "toggle", "Quirky"]]],
+        ["doIf",    ["=", ["readVariable", "main color"], "RED"], 
+                    [["doIfElse", ["=", ["readVariable", "second color"], "GREEN"], [
+                        ["setVar:to:", "color offset", ["+", 0, ["/", ["readVariable", "second color value"], 3]]]
+                    ], [
+                        ["setVar:to:", "color offset", ["-", 200, ["/", ["readVariable", "second color value"], 3]]]
+                    ]]]
+        ]
+    ],
+
+    "expressions": [
+        "BLUE",
+        24.5,
+        ["=", ["readVariable", "main color"], "RED"],
+        ["readVariable", "main color"],
+        ["+", 0, ["/", ["readVariable", "second color value"], 3]],
+        ["-", 66, ["/", ["readVariable", "second color value"], 3]]
+    ]
+}
