@@ -2,10 +2,7 @@
 
 The `scratch_blocks` and the `scratch_object` modules can parse the JSON 
 representation of a Scratch project, and then expresses it as code for Arduino. 
-
-The app uses these modules for a specific purpose in an upcoming workshop; 
-it searches for a script in the project named `instructions_for_each_update` 
-and translates this script.
+The app returns code formatted for a specific upcoming workshop.
 
 ## Install and Run
 
@@ -21,3 +18,10 @@ Then, with the app running, go to
 [http://127.0.0.1:5000/translate/79412942](http://127.0.0.1:5000/translate/79412942), 
 but use your project's ID instead.
 
+## Limitations
+
+- All variables are treated as global. 
+- Scratch does not have well-defined types. scratch2arduino tries to infer
+  types, defaulting to int. You may need to modify the type of variables
+  in Arduino by hand. Similarly, all lists are considered integer lists unless
+  every element of the list has a different consistent type. 
