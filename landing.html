@@ -1,0 +1,32 @@
+<!DOCTYPE hmtl>
+    <head>
+        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <style>
+            body {
+                font-family: Helvetica;
+            }
+            #error {
+                color: red;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Welcome to the Scratch2Arduino Translator</h1>
+        <p>Please enter the ID number for a Scratch project.</p>
+        <p id="error"></p>
+        <input id="project">
+        <button id="submit">Translate</button>
+        <script>
+            $("#submit").click(function() {
+                var projectId = $('#project').val()
+                if (/^\d{8}$/.test(projectId)) {
+                    window.location.replace(window.location.protocol + "//" + 
+                            window.location.host + "/translate/" + projectId)
+                } else {
+                    $("#error").text("Invalid project ID. You can find your project ID is in the URL for your Scratch project--it should be 8 digits.")
+                }
+            })
+
+        </script>
+    </body>
+</html>

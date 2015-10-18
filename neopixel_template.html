@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+
+<head>
+    <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+    <style>
+        body {
+            font-family: Helvetica;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<h1>Scratch 2 Arduino</h1>
+
+<pre class="prettyprint">
+#include &lt;Adafruit_NeoPixel.h&gt;
+{%- if motion_sensor %}
+#include &lt;MotionSensor.h&gt;
+#include &lt;Wire.h&gt;
+#include &lt;Adafruit_Sensor.h&gt;
+#include &lt;Adafruit_LSM303_U.h&gt;
+{% endif -%}
+#define PIN 6
+
+// DECLARE VARIABLES
+Adafruit_NeoPixel lights = Adafruit_NeoPixel(15, PIN, NEO_GRB + NEO_KHZ800);
+{%- if motion_sensor %}
+MotionSensor motionSensor;
+{% endif -%}
+int colors[15][3];
+{{init_vars}}
+
+// SETUP RUNS ONCE
+void setup() {
+  lights.begin();
+{%- if motion_sensor %}
+  motionSensor.init();
+{%- endif %}
+  for (int i=0; i&lt;15; i++) {
+    colors[i][0] = 255;
+    colors[i][1] = 0;
+    colors[i][2] = 0;
+  }
+{{setup}}
+  lights.show();
+}
+
+// LOOP RUNS OVER AND OVER
+void loop() {
+{{loop}}
+}
+
+// HELPER FUNCTIONS
+// ----------------
+
+{{helpers}}
+
+// Resets a light to its stored values.
+void turnOnLight(int lightNumber) {
+  lights.setPixelColor(lightNumber, colors[lightNumber][0], colors[lightNumber][1], colors[lightNumber][2]);
+  lights.show();
+}
+
+// Sets a light to off, without overwriting the stored values.
+void turnOffLight(int lightNumber) {
+  lights.setPixelColor(lightNumber, 0, 0, 0);
+  lights.show();
+}
+
+// Updates a light's stored values and then calls turnOnLight
+void setLightToRgb(int lightNumber, int red, int green, int blue) {
+  colors[lightNumber][0] = red;
+  colors[lightNumber][1] = green;
+  colors[lightNumber][2] = blue;
+  turnOnLight(lightNumber);
+}
+</pre>
+</body>
+</html>

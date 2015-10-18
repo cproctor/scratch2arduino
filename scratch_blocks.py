@@ -8,13 +8,15 @@ from random import randint
 #   expressions are within statements, and evaluate to a value.
 
 def clean_name(name):
-    "Converts a name to a canonical form"
+    "Converts a name to a canonical CamelCase"
     name = name.lower()
     name = re.sub('%n', '', name)
     name = name.strip()
-    name = re.sub('\s+', '_', name)
-    name = re.sub('[^a-zA-Z_]', '', name)
-    return name
+    name = re.sub('\s+', ' ', name)
+    name = re.sub('[^a-zA-Z ]', '', name)
+    tokens = name.split()
+    tokens = tokens[0:1] + map(lambda t: t.capitalize(), tokens[1:])
+    return "".join(tokens)
 
 class BlockNotSupportedError(Exception):
     pass
@@ -22,7 +24,7 @@ class BlockNotSupportedError(Exception):
 class ScratchRepresentation(object):
     arduino_rep = "(Representation of Scratch code)"
     indent=0
-    indent_chars = " " * 4
+    indent_chars = " " * 2
     def __init__(self, rep_json):
         self.parse(rep_json)
     def parse(self, rep_json):
@@ -39,11 +41,9 @@ class ScratchRepresentation(object):
 class ScratchScript(ScratchRepresentation):
 
     def __init__(self, script_json, indent=0, namespace=None):
-        print("Parsing: {}".format(script_json))
         self.indent = indent
         self.name = None
         self.parse(script_json)
-        print("Parsed script {}".format(self.name))
 
     def __str__(self):
         return "<ScratchScript {}>".format(self.name)
@@ -125,7 +125,7 @@ class EventBinding(ScratchScript):
     def parse(self, script_json):
         x, y, block_json = script_json
         signature_json = block_json[0]
-        self.fn_name = self.get_fn_name(signature_json)
+        self.get_fn_name(signature_json)
         self.name = "Event binding for {}".format(self.event_name)
         self.fn = Function(script_json, indent=self.indent, signature={
             "name": self.fn_name,
@@ -134,7 +134,6 @@ class EventBinding(ScratchScript):
         })
 
     def get_fn_name(self, signature_json):
-        print("GET FN NAME: {}".format(signature_json))
         identifier, self.event_name = signature_json
         self.event_name = clean_name(self.event_name)
         self.fn_id = randint(0, 100000)
@@ -165,7 +164,7 @@ class ScratchCodeBlock(ScratchRepresentation):
     def to_arduino(self):
         statement_representations = [s.to_arduino() for s in self.statements]
         statement_reps = filter(lambda x: x, statement_representations)
-        return "\n".join(statement_representations)
+        return "\n".join(statement_reps)
 
 class ScratchStatement(ScratchRepresentation):
     "Represents one line in a Scratch script, including any nested blocks"
@@ -235,7 +234,7 @@ class Wait(ScratchStatement):
     def parse(self, statement_json):
         self.duration = ScratchExpression.instantiate(statement_json[1])
     def to_arduino(self):
-        return self.indented("delay({});".format(self.duration * 1000))
+        return self.indented("delay(({}) * 1000);".format(self.duration.to_arduino()))
 
 
 class DoIf(ScratchStatement):
@@ -271,8 +270,8 @@ class DoRepeat(ScratchStatement):
 
     def to_arduino(self):
         return "\n".join([
-            self.indented("for (int {} = 0; {} < {}; {}++;) {{".format(self.counter_name, 
-                    self.counter_name, self.repeats, self.counter_name)),
+            self.indented("for (int {} = 0; {} < {}; {}++) {{".format(self.counter_name, 
+                    self.counter_name, self.repeats.to_arduino(), self.counter_name)),
             self.block.to_arduino(),
             self.indented("}")
         ])
@@ -300,7 +299,7 @@ class ScratchExpression(ScratchRepresentation):
     @classmethod
     def identify(cls, exp_json):
         if isinstance(exp_json, basestring):
-            if exp_json.isdigit():
+            if re.match("^-?[0-9\.]*$", exp_json):
                 return LiteralNumber
             else:
                 return LiteralString
@@ -327,7 +326,13 @@ class LiteralString(ScratchExpression):
 
 class LiteralNumber(ScratchExpression):
     def parse(self, value):
-        self.value = int(value)
+        if isinstance(value, (int, float)):
+            self.value = value
+        else:
+            try: 
+                self.value = int(value)
+            except ValueError:
+                self.value = float(value)
     def to_arduino(self):
         return json.dumps(self.value)
 
