@@ -85,7 +85,7 @@ class ScratchObject(object):
             else:
                 type_sig = type(val).__name__
                 translations.append("{} {} = {};".format(
-                    TYPE_TRANSLATIONS[type_sig], clean_name(key), json.dumps(val)
+                    TYPE_TRANSLATIONS[type_sig], key, json.dumps(val)
                 ))
         return "\n".join(" " * indent + t for t in translations)
 
