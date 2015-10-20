@@ -399,6 +399,14 @@ class GetParam(ScratchExpression):
     def to_arduino(self):
         return self.varName
 
+class RandomFromTo(ScratchExpression):
+    def parse(self, exp_json):
+        self.fromVal = exp_json[1]
+        self.toVal = exp_json[2]
+        
+    def to_arduino(self):
+        return "random({}, {})".format(self.fromVal, self.toVal)
+
 class Call(ScratchStatement):
     def parse(self, statement_json):
         self.function_name = clean_name(statement_json[1])
@@ -466,7 +474,8 @@ EXPRESSION_IDENTIFIERS = {
     "<"             : LessThan,
     "readVariable"  : ReadVar,
     "getParam"      : GetParam,
-    "keyPressed:"   : KeyPressed
+    "keyPressed:"   : KeyPressed,
+    "randomFrom:to:": RandomFromTo
 }
 
 SCRIPT_IDENTIFIERS = {
