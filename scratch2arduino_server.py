@@ -144,7 +144,7 @@ def translate(scratch_id):
         now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         log.info(json.dumps({"time": now, "project": project_json}))
         return template.render(init_vars=init_vars, setup=setup, 
-                loop=loop, helpers=helpers, motion_sensor=motion_sensor)
+                loop=loop, helpers=helpers, motion_sensor=motion_sensor, project_id=scratch_id)
     except Exception, e:
         return "<h1>Something went wrong:</h1> <pre>{}</pre>".format(traceback.format_exc())
 
