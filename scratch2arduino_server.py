@@ -8,6 +8,14 @@ import json
 from jinja2 import Environment, FileSystemLoader
 from os.path import dirname, realpath
 import traceback
+import logging
+import datetime
+
+log = logging.getLogger(__name__)
+handler = logging.FileHandler("/var/log/scratch2arduino.log")
+log.addHandler(handler)
+log.setLevel(logging.INFO)
+
 
 class NotFoundError(Exception):
     pass
@@ -133,6 +141,8 @@ def translate(scratch_id):
         setup = project.get_script("setup").block.to_arduino()
         loop = project.get_script("loop").block.to_arduino()
         helpers = "\n".join(s.to_arduino() for s in project.get_scripts() if include_script(s))
+        now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        log.info(json.dumps({"time": now, "project": project_json}))
         return template.render(init_vars=init_vars, setup=setup, 
                 loop=loop, helpers=helpers, motion_sensor=motion_sensor)
     except Exception, e:
