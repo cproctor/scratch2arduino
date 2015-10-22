@@ -370,6 +370,9 @@ class GreaterThan(BinaryOperator):
 class LessThan(BinaryOperator):
     operator = "<"
 
+class And(BinaryOperator):
+    operator = "&&"
+
 class ReadVar(ScratchExpression):
     def __init__(self, exp_json, namespace=None):
         self.varName = clean_name(exp_json[1])
@@ -475,7 +478,8 @@ EXPRESSION_IDENTIFIERS = {
     "readVariable"  : ReadVar,
     "getParam"      : GetParam,
     "keyPressed:"   : KeyPressed,
-    "randomFrom:to:": RandomFromTo
+    "randomFrom:to:": RandomFromTo, 
+    "&"             : And
 }
 
 SCRIPT_IDENTIFIERS = {
