@@ -23,7 +23,7 @@ class NotFoundError(Exception):
 env = Environment(loader=FileSystemLoader(dirname(realpath(__file__))))
 program_template = env.get_template("neopixel_template.html")
 base_template = env.get_template("base_template.html")
-landing_template = env.get_template("landing.html")
+landing_template = env.get_template("landing_template.html")
 app = Flask(__name__)
 
 excluded_vars = [
