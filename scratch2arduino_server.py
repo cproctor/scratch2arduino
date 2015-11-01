@@ -134,7 +134,7 @@ def landing():
         return traceback.format_exc()
 
 def scratch_project_json_to_arduino(scratch_project):
-    project = ScratchObject(project_json)
+    project = ScratchObject(scratch_project)
     init_vars = project.state_to_arduino(exclude=excluded_vars, indent=0)
     setup = project.get_script("setup").block.to_arduino()
     loop = project.get_script("loop").block.to_arduino()
