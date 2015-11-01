@@ -21,7 +21,8 @@ class NotFoundError(Exception):
     pass
 
 env = Environment(loader=FileSystemLoader(dirname(realpath(__file__))))
-template = env.get_template("neopixel_template.html")
+program_template = env.get_template("neopixel_template.html")
+base_template = env.get_template("base_template.html")
 landing_template = env.get_template("landing.html")
 app = Flask(__name__)
 
@@ -132,21 +133,33 @@ def landing():
     except e: 
         return traceback.format_exc()
 
+def scratch_project_json_to_arduino(scratch_project):
+    project = ScratchObject(project_json)
+    init_vars = project.state_to_arduino(exclude=excluded_vars, indent=0)
+    setup = project.get_script("setup").block.to_arduino()
+    loop = project.get_script("loop").block.to_arduino()
+    helpers = "\n".join(s.to_arduino() for s in project.get_scripts() if include_script(s))
+    return program_template.render(
+        init_vars=init_vars, 
+        setup=setup, 
+        loop=loop, 
+        helpers=helpers, 
+        motion_sensor=motion_sensor
+    )
+
 @app.route('/translate/<int:scratch_id>')
 def translate(scratch_id):
     try:
         project_json = get_scratch_project(scratch_id)
-        project = ScratchObject(project_json)
-        init_vars = project.state_to_arduino(exclude=excluded_vars, indent=0)
-        setup = project.get_script("setup").block.to_arduino()
-        loop = project.get_script("loop").block.to_arduino()
-        helpers = "\n".join(s.to_arduino() for s in project.get_scripts() if include_script(s))
+        program = scratch_project_json_to_arduino(project_json)
         now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         log.info(json.dumps({"time": now, "project": project_json}))
-        return template.render(init_vars=init_vars, setup=setup, 
-                loop=loop, helpers=helpers, motion_sensor=motion_sensor, project_id=scratch_id)
+        return baes_template.render(
+            program=program,
+            project_id=scratch_id
+        )
     except Exception, e:
         return "<h1>Something went wrong:</h1> <pre>{}</pre>".format(traceback.format_exc())
 
-        
-app.run()
+if __name__ == '__main__':        
+    app.run()

@@ -1,22 +1,3 @@
-<!DOCTYPE html>
-
-<head>
-    <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
-    <style>
-        body {
-            font-family: Helvetica;
-        }
-    </style>
-
-</head>
-
-<body>
-
-<pre class="prettyprint">
-// This is an Arduino translation of Scratch project {{project_id}} 
-// (http://scratch.mit.edu/projects/{{project_id}}), created by the 
-// scratch2arduino translator at http://translate.mrproctor.net.
-
 #include &lt;Adafruit_NeoPixel.h&gt;
 {%- if motion_sensor %}
 #include &lt;MotionSensor.h&gt;
@@ -78,6 +59,3 @@ void setLightToRgb(int lightNumber, int red, int green, int blue) {
   colors[lightNumber][2] = blue;
   turnOnLight(lightNumber);
 }
-</pre>
-</body>
-</html>
